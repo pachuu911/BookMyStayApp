@@ -1,60 +1,40 @@
 import java.util.*;
 
-class Room {
-    private String type;
-    private double price;
+class Reservation {
+    private String guestName;
+    private String roomType;
 
-    public Room(String type, double price) {
-        this.type = type;
-        this.price = price;
+    public Reservation(String guestName, String roomType) {
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 
-    public String getType() {
-        return type;
+    public String getGuestName() {
+        return guestName;
     }
 
-    public double getPrice() {
-        return price;
-    }
-}
-
-class RoomInventory {
-
-    private Map<String, Integer> roomAvailability;
-
-    public RoomInventory() {
-        roomAvailability = new HashMap<>();
-        roomAvailability.put("Single", 5);
-        roomAvailability.put("Double", 3);
-        roomAvailability.put("Suite", 2);
-    }
-
-    public Map<String, Integer> getRoomAvailability() {
-        return roomAvailability;
+    public String getRoomType() {
+        return roomType;
     }
 }
 
-class RoomSearchService {
+class BookingRequestQueue {
+    private Queue<Reservation> requestQueue;
 
-    public void searchAvailableRooms(
-            RoomInventory inventory,
-            Room singleRoom,
-            Room doubleRoom,
-            Room suiteRoom) {
+    public BookingRequestQueue() {
+        requestQueue = new LinkedList<>();
+    }
 
-        Map<String, Integer> availability = inventory.getRoomAvailability();
+    public void addRequest(Reservation reservation) {
+        requestQueue.offer(reservation);
+    }
 
-        if (availability.get("Single") > 0) {
-            System.out.println(singleRoom.getType() + " Room Available | Price: " + singleRoom.getPrice());
-        }
+    public Reservation getNextRequest() {
+        return requestQueue.poll();
+    }
 
-        if (availability.get("Double") > 0) {
-            System.out.println(doubleRoom.getType() + " Room Available | Price: " + doubleRoom.getPrice());
-        }
-
-        if (availability.get("Suite") > 0) {
-            System.out.println(suiteRoom.getType() + " Room Available | Price: " + suiteRoom.getPrice());
-        }
+    public boolean hasPendingRequests() {
+        return !requestQueue.isEmpty();
     }
 }
 
@@ -62,14 +42,21 @@ public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        RoomInventory inventory = new RoomInventory();
+        System.out.println("Booking Request Queue");
 
-        Room singleRoom = new Room("Single", 2000);
-        Room doubleRoom = new Room("Double", 3500);
-        Room suiteRoom = new Room("Suite", 5000);
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        RoomSearchService service = new RoomSearchService();
+        Reservation r1 = new Reservation("Abhi", "Single");
+        Reservation r2 = new Reservation("Subha", "Double");
+        Reservation r3 = new Reservation("Vanmathi", "Suite");
 
-        service.searchAvailableRooms(inventory, singleRoom, doubleRoom, suiteRoom);
+        bookingQueue.addRequest(r1);
+        bookingQueue.addRequest(r2);
+        bookingQueue.addRequest(r3);
+
+        while (bookingQueue.hasPendingRequests()) {
+            Reservation r = bookingQueue.getNextRequest();
+            System.out.println(r.getGuestName() + " requested " + r.getRoomType());
+        }
     }
 }
